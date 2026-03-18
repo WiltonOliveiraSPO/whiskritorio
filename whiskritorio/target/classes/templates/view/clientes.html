@@ -1,0 +1,297 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro de Clientes</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+    :root {
+      --bg: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --hover: #f3f4f6;
+      --accent: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .header a {
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      background: #fff;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 20px;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--hover);
+      transform: translateY(-1px);
+    }
+
+    .flash {
+      margin: 10px 0 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .error {
+      color: #b91c1c;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      margin: 18px 0 8px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fff;
+      margin-top: 6px;
+      cursor: pointer;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      border-color: #cbd5f5;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    }
+
+    .card-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      font-size: 14px;
+    }
+
+    .field span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .card-actions {
+      margin-top: 12px;
+      display: none;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .card.active .card-actions {
+      display: flex;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 860px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>Cadastro de Clientes</h1>
+      <div class="toolbar">
+        <a class="btn" href="/">🏠 Tela Inicial</a>
+        <a class="btn" href="/">↩️ Menu Principal</a>
+      </div>
+    </div>
+
+    <div th:if="${sucesso}" class="flash" th:text="${sucesso}"></div>
+    <div th:if="${erro}" class="flash" th:text="${erro}"></div>
+
+    <div class="toolbar">
+      <button class="btn" type="submit" form="clienteForm">💾 Salvar</button>
+      <a class="btn" th:href="@{/clientes(page=${clientesPage.number})}">🧹 Limpar</a>
+    </div>
+
+    <form id="clienteForm" th:action="@{/clientes/salvar(page=${clientesPage.number})}" method="post" th:object="${cliente}">
+      <input type="hidden" th:field="*{id}" />
+      <div class="grid">
+        <div class="full">
+          <label for="nome">Nome</label>
+          <input id="nome" type="text" th:field="*{nome}" placeholder="Nome completo" />
+          <div class="error" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input id="email" type="email" th:field="*{email}" placeholder="email@exemplo.com" />
+          <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+        </div>
+        <div>
+          <label for="telefone">Telefone</label>
+          <input id="telefone" type="text" th:field="*{telefone}" placeholder="(00) 00000-0000" />
+          <div class="error" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></div>
+        </div>
+        <div>
+          <label for="documento">Documento</label>
+          <input id="documento" type="text" th:field="*{documento}" placeholder="CPF/CNPJ" />
+          <div class="error" th:if="${#fields.hasErrors('documento')}" th:errors="*{documento}"></div>
+        </div>
+      </div>
+    </form>
+
+    <div class="nav">
+      <a class="btn" th:href="@{/clientes(page=0)}">⏮️ Primeiro</a>
+      <a class="btn" th:href="@{/clientes(page=${clientesPage.number - 1})}">◀️ Anterior</a>
+      <a class="btn" th:href="@{/clientes(page=${clientesPage.number + 1})}">▶️ Próximo</a>
+      <a class="btn" th:href="@{/clientes(page=${lastPage})}">⏭️ Último</a>
+    </div>
+
+    <div class="card" id="clienteCard" th:if="${clientesPage.content.size() > 0}" th:with="c=${clientesPage.content[0]}">
+      <div class="card-title">Cliente Navegado</div>
+      <div class="card-grid">
+        <div class="field">
+          <span>Nome</span>
+          <strong th:text="${c.nome}"></strong>
+        </div>
+        <div class="field">
+          <span>Email</span>
+          <strong th:text="${c.email}"></strong>
+        </div>
+        <div class="field">
+          <span>Telefone</span>
+          <strong th:text="${c.telefone}"></strong>
+        </div>
+        <div class="field">
+          <span>Documento</span>
+          <strong th:text="${c.documento}"></strong>
+        </div>
+      </div>
+      <div class="hint">Dê duplo clique no cartão para mostrar os botões de alteração.</div>
+      <div class="card-actions">
+        <a class="btn" th:href="@{/clientes/editar/{id}(id=${c.id}, page=${clientesPage.number})}">✏️ Alterar</a>
+        <form th:action="@{/clientes/excluir/{id}(id=${c.id}, page=${clientesPage.number})}" method="post">
+          <button class="btn" type="submit">🗑️ Excluir</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card" th:if="${clientesPage.content.size() == 0}">
+      Nenhum cliente cadastrado.
+    </div>
+  </div>
+
+  <script>
+    const card = document.getElementById('clienteCard');
+    if (card) {
+      card.addEventListener('dblclick', () => {
+        card.classList.toggle('active');
+      });
+    }
+  </script>
+</body>
+</html>

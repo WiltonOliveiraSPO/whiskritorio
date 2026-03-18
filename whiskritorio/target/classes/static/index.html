@@ -1,0 +1,160 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whiskritório</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+    :root {
+      --bg: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --hover: #f3f4f6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 280px;
+      padding: 32px 24px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      background: var(--bg);
+    }
+
+    .sidebar-header {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .menu a {
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .menu a span.emoji {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .menu a:hover {
+      background: var(--hover);
+      transform: translateX(2px);
+    }
+
+    .menu small {
+      display: block;
+      color: var(--muted);
+      font-weight: 400;
+      margin-left: 36px;
+      margin-top: -6px;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .logo {
+      width: 50%;
+      max-width: 520px;
+      min-width: 220px;
+      height: auto;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .content {
+        min-height: 60vh;
+      }
+
+      .logo {
+        width: 70%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="sidebar-header">Whiskritório</div>
+      <nav class="menu">
+        <a href="/clientes">
+          <span class="emoji">👥</span>
+          Cadastro de Clientes
+        </a>
+        <a href="#">
+          <span class="emoji">📦</span>
+          Produtos e Estoque
+        </a>
+        <a href="#">
+          <span class="emoji">💳</span>
+          Vendas
+        </a>
+        <a href="#">
+          <span class="emoji">📈</span>
+          Relatório de Vendas
+        </a>
+        <a href="#">
+          <span class="emoji">📋</span>
+          Relatório de Estoque
+        </a>
+        <a href="#">
+          <span class="emoji">🚪</span>
+          Sair
+        </a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <img class="logo" src="/img/whiskritorio_logo.png" alt="Logomarca Whiskritório" />
+    </main>
+  </div>
+</body>
+</html>
