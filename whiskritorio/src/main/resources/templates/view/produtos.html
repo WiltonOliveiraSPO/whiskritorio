@@ -1,0 +1,316 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro de Produtos e Estoque</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+    :root {
+      --bg: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --hover: #f3f4f6;
+      --accent: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 20px;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--hover);
+      transform: translateY(-1px);
+    }
+
+    .flash {
+      margin: 10px 0 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .error {
+      color: #b91c1c;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      margin: 18px 0 8px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fff;
+      margin-top: 6px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      font-size: 14px;
+    }
+
+    .field span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .card-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .checkbox-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-wrap input {
+      width: auto;
+      margin: 0;
+    }
+
+    .money-hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 860px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>Cadastro de Produtos e Estoque</h1>
+      <div class="toolbar">
+        <a class="btn" href="/">🏠 Menu Inicial</a>
+      </div>
+    </div>
+
+    <div th:if="${sucesso}" class="flash" th:text="${sucesso}"></div>
+    <div th:if="${erro}" class="flash" th:text="${erro}"></div>
+
+    <div class="toolbar">
+      <button class="btn" type="submit" form="produtoForm">💾 Salvar</button>
+      <a class="btn" th:href="@{/produtos(page=${produtosPage.number})}">🧹 Limpar</a>
+      <a class="btn" th:href="@{/produtos(page=0)}">⏮️ Primeiro</a>
+      <a class="btn" th:href="@{/produtos(page=${produtosPage.number - 1})}">◀️ Anterior</a>
+      <a class="btn" th:href="@{/produtos(page=${produtosPage.number + 1})}">▶️ Próximo</a>
+      <a class="btn" th:href="@{/produtos(page=${lastPage})}">⏭️ Último</a>
+    </div>
+
+    <form id="produtoForm" th:action="@{/produtos/salvar(page=${produtosPage.number})}" method="post" th:object="${produto}">
+      <input type="hidden" th:field="*{id}" />
+      <div class="grid">
+        <div class="full">
+          <label for="nome">Nome</label>
+          <input id="nome" type="text" th:field="*{nome}" placeholder="Nome do produto" />
+          <div class="error" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+        </div>
+        <div>
+          <label for="categoria">Categoria</label>
+          <input id="categoria" type="text" th:field="*{categoria}" placeholder="Vinhos, Destilados, etc." />
+          <div class="error" th:if="${#fields.hasErrors('categoria')}" th:errors="*{categoria}"></div>
+        </div>
+        <div>
+          <label for="preco">Preço (R$)</label>
+          <input id="preco" type="text" inputmode="decimal" th:field="*{preco}" placeholder="0,00" />
+          <div class="money-hint">Use vírgula para centavos (ex: 19,90)</div>
+          <div class="error" th:if="${#fields.hasErrors('preco')}" th:errors="*{preco}"></div>
+        </div>
+        <div>
+          <label for="estoque">Estoque</label>
+          <input id="estoque" type="number" min="0" th:field="*{estoque}" placeholder="0" />
+          <div class="error" th:if="${#fields.hasErrors('estoque')}" th:errors="*{estoque}"></div>
+        </div>
+        <div class="full checkbox-wrap">
+          <input id="ativo" type="checkbox" th:field="*{ativo}" />
+          <label for="ativo">Produto ativo</label>
+        </div>
+      </div>
+    </form>
+
+    <div class="card" th:if="${produtosPage.content.size() > 0}" th:with="p=${produtosPage.content[0]}">
+      <div class="card-title">Produto Navegado</div>
+      <div class="card-grid">
+        <div class="field">
+          <span>Nome</span>
+          <strong th:text="${p.nome}"></strong>
+        </div>
+        <div class="field">
+          <span>Categoria</span>
+          <strong th:text="${p.categoria}"></strong>
+        </div>
+        <div class="field">
+          <span>Preço</span>
+          <strong class="money" th:attr="data-value=${p.preco}"></strong>
+        </div>
+        <div class="field">
+          <span>Estoque</span>
+          <strong th:text="${p.estoque}"></strong>
+        </div>
+        <div class="field">
+          <span>Status</span>
+          <strong th:text="${p.ativo ? 'Ativo' : 'Inativo'}"></strong>
+        </div>
+      </div>
+      <div class="card-actions">
+        <a class="btn" th:href="@{/produtos/editar/{id}(id=${p.id}, page=${produtosPage.number})}">✏️ Editar</a>
+        <form th:action="@{/produtos/excluir/{id}(id=${p.id}, page=${produtosPage.number})}" method="post">
+          <button class="btn" type="submit">🗑️ Excluir</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card" th:if="${produtosPage.content.size() == 0}">
+      Nenhum produto cadastrado.
+    </div>
+  </div>
+
+  <script>
+    const precoInput = document.getElementById('preco');
+    const form = document.getElementById('produtoForm');
+
+    function formatarMoeda(valor) {
+      const numero = Number(valor);
+      if (Number.isNaN(numero)) {
+        return '';
+      }
+      return numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    if (precoInput && precoInput.value) {
+      const normalizado = precoInput.value.replace(',', '.');
+      precoInput.value = formatarMoeda(normalizado);
+    }
+
+    if (form) {
+      form.addEventListener('submit', () => {
+        if (precoInput) {
+          const raw = precoInput.value.replace(/\./g, '').replace(',', '.');
+          precoInput.value = raw;
+        }
+      });
+    }
+
+    document.querySelectorAll('.money').forEach(el => {
+      const value = el.dataset.value;
+      if (value) {
+        el.textContent = 'R$ ' + formatarMoeda(value);
+      }
+    });
+  </script>
+</body>
+</html>

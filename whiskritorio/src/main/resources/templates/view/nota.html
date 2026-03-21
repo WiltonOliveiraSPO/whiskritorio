@@ -1,0 +1,200 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nota Fiscal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600&display=swap');
+
+    body {
+      margin: 0;
+      background: #f4f4f5;
+      font-family: 'Inconsolata', monospace;
+      color: #111;
+    }
+
+    .wrap {
+      display: flex;
+      justify-content: center;
+      padding: 32px 16px 48px;
+    }
+
+    .receipt {
+      width: 360px;
+      background: #fff;
+      border: 1px dashed #d1d5db;
+      padding: 18px 16px 22px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .title {
+      text-align: center;
+      font-weight: 600;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .center {
+      text-align: center;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .line {
+      border-top: 1px dashed #d1d5db;
+      margin: 10px 0;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin: 4px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 4px 0;
+    }
+
+    .total {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .qr {
+      display: flex;
+      justify-content: center;
+      margin: 10px 0 4px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn {
+      border: 1px solid #d1d5db;
+      background: #fff;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      color: #111;
+      font-size: 12px;
+    }
+
+    @media print {
+      body { background: #fff; }
+      .actions { display: none; }
+      .wrap { padding: 0; }
+      .receipt { border: none; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="receipt">
+      <div class="title">WHISKRITÓRIO</div>
+      <div class="center">Nota Fiscal do Consumidor</div>
+      <div class="center">CNPJ: 00.000.000/0001-00</div>
+      <div class="center">Rua das Adegas, 123 - São Paulo/SP</div>
+
+      <div class="line"></div>
+
+      <div class="row"><span>Venda:</span><span th:text="${venda.id}"></span></div>
+      <div class="row"><span>Cliente:</span><span th:text="${venda.cliente.nome}"></span></div>
+      <div class="row"><span>Pagamento:</span><span th:text="${venda.formaPagamento.label}"></span></div>
+      <div class="row"><span>Data:</span><span th:text="${#temporals.format(venda.criadoEm, 'dd/MM/yyyy HH:mm')}"></span></div>
+
+      <div class="line"></div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qtd</th>
+            <th>Vlr</th>
+            <th>Sub</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="i : ${venda.itens}">
+            <td th:text="${i.produto.nome}"></td>
+            <td th:text="${i.quantidade}"></td>
+            <td class="money" th:attr="data-value=${i.precoUnitario}"></td>
+            <td class="money" th:attr="data-value=${i.subtotal}"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="line"></div>
+
+      <div class="row total"><span>Total:</span><span class="money" th:attr="data-value=${venda.total}"></span></div>
+
+      <div class="qr">
+        <svg id="qr" width="120" height="120" viewBox="0 0 120 120"></svg>
+      </div>
+      <div class="center">Consulte pelo QR Code</div>
+      <div class="center">Obrigado pela preferência!</div>
+
+      <div class="actions">
+        <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
+        <a class="btn" href="/vendas">↩️ Voltar</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function formatarMoeda(valor) {
+      const numero = Number(valor);
+      if (Number.isNaN(numero)) {
+        return '';
+      }
+      return 'R$ ' + numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    document.querySelectorAll('.money').forEach(el => {
+      const value = el.dataset.value;
+      if (value) {
+        el.textContent = formatarMoeda(value);
+      }
+    });
+
+    function gerarQRCode(texto) {
+      const size = 24;
+      const cell = 5;
+      const svg = document.getElementById('qr');
+      svg.innerHTML = '';
+      const hash = Array.from(texto).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          const v = (x * 31 + y * 17 + hash) % 7;
+          if (v === 0 || v === 3) {
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', x * cell);
+            rect.setAttribute('y', y * cell);
+            rect.setAttribute('width', cell);
+            rect.setAttribute('height', cell);
+            rect.setAttribute('fill', '#111');
+            svg.appendChild(rect);
+          }
+        }
+      }
+    }
+
+    const idVenda = document.querySelector('.row span:nth-child(2)')?.textContent || '0';
+    gerarQRCode(`WHISK-${idVenda}`);
+  </script>
+</body>
+</html>

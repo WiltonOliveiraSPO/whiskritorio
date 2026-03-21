@@ -1,0 +1,482 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro de Vendas</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+    :root {
+      --bg: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --hover: #f3f4f6;
+      --accent: #1f2937;
+      --success: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #ecfdf3;
+      color: var(--success);
+      font-weight: 700;
+      font-size: 12px;
+      border: 1px solid #bbf7d0;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 20px;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--hover);
+      transform: translateY(-1px);
+    }
+
+    .btn[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .flash {
+      margin: 10px 0 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .items {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .items-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .total {
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fff;
+      margin-top: 6px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .card-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .action-cell {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    @media (max-width: 960px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body th:attr="data-editando=${editando}">
+  <div class="page">
+    <div class="header">
+      <div>
+        <h1>Cadastro de Vendas</h1>
+        <div class="status" th:if="${editando}">✔ FECHADA</div>
+      </div>
+      <div class="toolbar">
+        <a class="btn" href="/">🏠 Menu Inicial</a>
+      </div>
+    </div>
+
+    <div th:if="${sucesso}" class="flash" th:text="${sucesso}"></div>
+    <div th:if="${erro}" class="flash" th:text="${erro}"></div>
+
+    <div class="toolbar">
+      <button class="btn" id="salvarBtn" type="submit" form="vendaForm">💾 Salvar</button>
+      <a class="btn" th:href="@{/vendas(page=${vendasPage.number})}">🧹 Limpar</a>
+      <a class="btn" th:href="@{/vendas(page=0)}">⏮️ Primeiro</a>
+      <a class="btn" th:href="@{/vendas(page=${vendasPage.number - 1})}">◀️ Anterior</a>
+      <a class="btn" th:href="@{/vendas(page=${vendasPage.number + 1})}">▶️ Próximo</a>
+      <a class="btn" th:href="@{/vendas(page=${lastPage})}">⏭️ Último</a>
+    </div>
+
+    <form id="vendaForm" th:action="@{/vendas/salvar(page=${vendasPage.number})}" method="post">
+      <input type="hidden" name="id" th:value="${venda.id}" />
+      <div class="grid">
+        <div>
+          <label for="clienteId">Cliente</label>
+          <select id="clienteId" name="clienteId" required>
+            <option value="" disabled selected>Selecione</option>
+            <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"
+                    th:selected="${venda.cliente != null and c.id == venda.cliente.id}"></option>
+          </select>
+        </div>
+        <div>
+          <label for="formaPagamento">Forma de Pagamento</label>
+          <select id="formaPagamento" name="formaPagamento" required>
+            <option value="" disabled selected>Selecione</option>
+            <option th:each="f : ${formasPagamento}" th:value="${f}" th:text="${f.label}"
+                    th:selected="${venda.formaPagamento == f}"></option>
+          </select>
+        </div>
+      </div>
+
+      <div class="items">
+        <div class="items-header">
+          <span>Itens da Venda</span>
+          <button class="btn" type="button" id="addItemBtn">➕ Adicionar item</button>
+        </div>
+        <div class="hint" th:if="${editando}">Itens bloqueados após venda fechada.</div>
+
+        <div class="grid">
+          <div class="full">
+            <label for="produtoSelect">Produto</label>
+            <select id="produtoSelect">
+              <option value="" disabled selected>Selecione o produto</option>
+              <option th:each="p : ${produtos}" th:value="${p.id}" th:text="${p.nome}"
+                      th:data-preco="${p.preco}" th:data-estoque="${p.estoque}"></option>
+            </select>
+          </div>
+          <div>
+            <label for="quantidadeInput">Quantidade</label>
+            <input id="quantidadeInput" type="number" min="1" value="1" />
+          </div>
+        </div>
+
+        <table id="itensTable">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Quantidade</th>
+              <th>Preço Unitário</th>
+              <th>Subtotal</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="item : ${venda.itens}">
+              <td th:text="${item.produto.nome}"></td>
+              <td th:text="${item.quantidade}"></td>
+              <td class="money" th:attr="data-value=${item.precoUnitario}"></td>
+              <td class="money" th:attr="data-value=${item.subtotal}"></td>
+              <td>
+                <div class="action-cell">
+                  <button type="button" class="btn remove-btn">🧹 Remover</button>
+                  <input type="hidden" name="produtoId" th:value="${item.produto.id}" />
+                  <input type="hidden" name="quantidade" th:value="${item.quantidade}" />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="total" id="totalVenda" th:attr="data-value=${venda.total}"></div>
+      </div>
+    </form>
+
+    <div class="card" th:if="${vendasPage.content.size() > 0}" th:with="v=${vendasPage.content[0]}">
+      <div class="card-title">Venda Navegada</div>
+      <div><strong>Cliente:</strong> <span th:text="${v.cliente.nome}"></span></div>
+      <div><strong>Forma:</strong> <span th:text="${v.formaPagamento.label}"></span></div>
+      <div><strong>Total:</strong> <span class="money" th:attr="data-value=${v.total}"></span></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Qtd</th>
+            <th>Preço</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="i : ${v.itens}">
+            <td th:text="${i.produto.nome}"></td>
+            <td th:text="${i.quantidade}"></td>
+            <td class="money" th:attr="data-value=${i.precoUnitario}"></td>
+            <td class="money" th:attr="data-value=${i.subtotal}"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="card-actions">
+        <a class="btn" th:href="@{/vendas/editar/{id}(id=${v.id}, page=${vendasPage.number})}">✏️ Editar</a>
+        <a class="btn" target="_blank" rel="noopener" th:href="@{/vendas/nota/{id}(id=${v.id})}">🧾 Nota Fiscal</a>
+        <form th:action="@{/vendas/excluir/{id}(id=${v.id}, page=${vendasPage.number})}" method="post">
+          <button class="btn" type="submit">🗑️ Excluir</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card" th:if="${vendasPage.content.size() == 0}">
+      Nenhuma venda cadastrada.
+    </div>
+  </div>
+
+  <script>
+    const body = document.body;
+    const editando = body.dataset.editando === 'true';
+    const itensTable = document.querySelector('#itensTable tbody');
+    const addItemBtn = document.getElementById('addItemBtn');
+    const produtoSelect = document.getElementById('produtoSelect');
+    const quantidadeInput = document.getElementById('quantidadeInput');
+    const totalVenda = document.getElementById('totalVenda');
+    const salvarBtn = document.getElementById('salvarBtn');
+    const clienteSelect = document.getElementById('clienteId');
+    const formaSelect = document.getElementById('formaPagamento');
+
+    function formatarMoeda(valor) {
+      const numero = Number(valor);
+      if (Number.isNaN(numero)) {
+        return '';
+      }
+      return 'R$ ' + numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function atualizarTotal() {
+      let total = 0;
+      itensTable.querySelectorAll('tr').forEach(row => {
+        const subtotal = parseFloat(row.dataset.subtotal || '0');
+        total += subtotal;
+      });
+      totalVenda.textContent = formatarMoeda(total);
+      totalVenda.dataset.value = total.toString();
+    }
+
+    function criarHiddenInput(name, value) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value;
+      return input;
+    }
+
+    function configurarRemover(row) {
+      const btn = row.querySelector('.remove-btn');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          row.remove();
+          atualizarTotal();
+          validarMudancas();
+        });
+      }
+    }
+
+    function validarMudancas() {
+      if (!editando) {
+        return;
+      }
+      const clienteMudou = clienteSelect.value !== clienteSelect.dataset.original;
+      const formaMudou = formaSelect.value !== formaSelect.dataset.original;
+      salvarBtn.disabled = !(clienteMudou || formaMudou);
+    }
+
+    if (editando) {
+      addItemBtn.disabled = true;
+      produtoSelect.disabled = true;
+      quantidadeInput.disabled = true;
+      document.querySelectorAll('.remove-btn').forEach(btn => btn.disabled = true);
+
+      clienteSelect.dataset.original = clienteSelect.value;
+      formaSelect.dataset.original = formaSelect.value;
+      salvarBtn.disabled = true;
+
+      clienteSelect.addEventListener('change', validarMudancas);
+      formaSelect.addEventListener('change', validarMudancas);
+    }
+
+    addItemBtn.addEventListener('click', () => {
+      if (editando) {
+        return;
+      }
+      const option = produtoSelect.options[produtoSelect.selectedIndex];
+      if (!option || !option.value) {
+        alert('Selecione um produto.');
+        return;
+      }
+
+      const qtd = parseInt(quantidadeInput.value || '0', 10);
+      if (!qtd || qtd <= 0) {
+        alert('Informe uma quantidade válida.');
+        return;
+      }
+
+      const estoque = parseInt(option.dataset.estoque || '0', 10);
+      if (qtd > estoque) {
+        alert('Quantidade maior que o estoque disponível.');
+        return;
+      }
+
+      const preco = parseFloat(option.dataset.preco || '0');
+      const subtotal = preco * qtd;
+
+      const row = document.createElement('tr');
+      row.dataset.subtotal = subtotal.toString();
+      row.innerHTML = `
+        <td>${option.text}</td>
+        <td>${qtd}</td>
+        <td class="money" data-value="${preco}"></td>
+        <td class="money" data-value="${subtotal}"></td>
+        <td>
+          <div class="action-cell">
+            <button type="button" class="btn remove-btn">🧹 Remover</button>
+          </div>
+        </td>
+      `;
+
+      const actionCell = row.querySelector('.action-cell');
+      actionCell.appendChild(criarHiddenInput('produtoId', option.value));
+      actionCell.appendChild(criarHiddenInput('quantidade', qtd));
+
+      itensTable.appendChild(row);
+      configurarRemover(row);
+      formatarTodosDinheiro();
+      atualizarTotal();
+    });
+
+    function formatarTodosDinheiro() {
+      document.querySelectorAll('.money').forEach(el => {
+        const value = el.dataset.value;
+        if (value) {
+          el.textContent = formatarMoeda(value);
+        }
+      });
+    }
+
+    itensTable.querySelectorAll('tr').forEach(row => {
+      const subtotalCell = row.querySelector('td:nth-child(4)');
+      if (subtotalCell) {
+        row.dataset.subtotal = (subtotalCell.dataset.value || '0');
+      }
+      configurarRemover(row);
+    });
+
+    formatarTodosDinheiro();
+    atualizarTotal();
+  </script>
+</body>
+</html>

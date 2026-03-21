@@ -1,0 +1,243 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatório de Vendas</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+    :root {
+      --bg: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --hover: #f3f4f6;
+      --accent: #111827;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .total {
+      font-weight: 700;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>Relatório de Vendas</h1>
+      <a class="btn" href="/">🏠 Menu Inicial</a>
+    </div>
+
+    <div class="tabs">
+      <button class="tab" data-tab="periodo">📅 Por Período</button>
+      <button class="tab" data-tab="tipo">💳 Por Tipo</button>
+    </div>
+
+    <div class="panel" id="panel-periodo">
+      <form method="get" action="/relatorios/vendas">
+        <input type="hidden" name="aba" value="periodo" />
+        <div class="grid">
+          <div>
+            <label for="inicio">Data inicial</label>
+            <input id="inicio" type="date" name="inicio" th:value="${inicio}" />
+          </div>
+          <div>
+            <label for="fim">Data final</label>
+            <input id="fim" type="date" name="fim" th:value="${fim}" />
+          </div>
+          <div>
+            <button class="btn" type="submit">🔎 Filtrar</button>
+            <a class="btn" th:href="@{/relatorios/vendas/pdf(aba='periodo', inicio=${inicio}, fim=${fim})}" target="_blank" rel="noopener">📄 PDF</a>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel" id="panel-tipo">
+      <form method="get" action="/relatorios/vendas">
+        <input type="hidden" name="aba" value="tipo" />
+        <div class="grid">
+          <div>
+            <label for="tipo">Forma de pagamento</label>
+            <select id="tipo" name="tipo">
+              <option value="">Selecione</option>
+              <option th:each="f : ${formasPagamento}" th:value="${f}" th:text="${f.label}" th:selected="${tipo} == ${f}"></option>
+            </select>
+          </div>
+          <div>
+            <button class="btn" type="submit">🔎 Filtrar</button>
+            <a class="btn" th:href="@{/relatorios/vendas/pdf(aba='tipo', tipo=${tipo})}" target="_blank" rel="noopener">📄 PDF</a>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Forma</th>
+          <th>Total</th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="v : ${vendas}">
+          <td th:text="${v.id}"></td>
+          <td th:text="${v.cliente.nome}"></td>
+          <td th:text="${v.formaPagamento.label}"></td>
+          <td class="money" th:attr="data-value=${v.total}"></td>
+          <td th:text="${#temporals.format(v.criadoEm, 'dd/MM/yyyy HH:mm')}"></td>
+        </tr>
+        <tr th:if="${vendas.size() == 0}">
+          <td colspan="5">Nenhuma venda registrada.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="total">Total Geral: <span class="money" th:attr="data-value=${totalVendas}"></span></div>
+  </div>
+
+  <script>
+    const abaAtiva = '[[${abaAtiva}]]' || 'periodo';
+    const tabs = document.querySelectorAll('.tab');
+    const panelPeriodo = document.getElementById('panel-periodo');
+    const panelTipo = document.getElementById('panel-tipo');
+
+    tabs.forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.tab === abaAtiva);
+    });
+
+    panelPeriodo.style.display = abaAtiva === 'periodo' ? 'block' : 'none';
+    panelTipo.style.display = abaAtiva === 'tipo' ? 'block' : 'none';
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const alvo = tab.dataset.tab;
+        window.location.href = `/relatorios/vendas?aba=${alvo}`;
+      });
+    });
+
+    function formatarMoeda(valor) {
+      const numero = Number(valor);
+      if (Number.isNaN(numero)) {
+        return '';
+      }
+      return 'R$ ' + numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    document.querySelectorAll('.money').forEach(el => {
+      const value = el.dataset.value;
+      if (value) {
+        el.textContent = formatarMoeda(value);
+      }
+    });
+  </script>
+</body>
+</html>
