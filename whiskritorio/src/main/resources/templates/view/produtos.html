@@ -3,191 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/img/whisky.png" />
   <title>Cadastro de Produtos e Estoque</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
 
-    :root {
-      --bg: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --hover: #f3f4f6;
-      --accent: #1f2937;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Montserrat', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .page {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 28px 24px 48px;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
-
-    .header h1 {
-      margin: 0;
-      font-size: 26px;
-    }
-
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 14px 0 20px;
-    }
-
-    .btn {
-      border: 1px solid var(--border);
-      background: #fff;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-weight: 600;
-      text-decoration: none;
-      color: var(--text);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.2s ease;
-    }
-
-    .btn:hover {
-      background: var(--hover);
-      transform: translateY(-1px);
-    }
-
-    .flash {
-      margin: 10px 0 14px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: #f9fafb;
-      border: 1px solid var(--border);
-      font-weight: 600;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 14px;
-    }
-
-    .full {
-      grid-column: 1 / -1;
-    }
-
-    .error {
-      color: #b91c1c;
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    .nav {
-      display: flex;
-      gap: 10px;
-      margin: 18px 0 8px;
-      flex-wrap: wrap;
-    }
-
-    .card {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      background: #fff;
-      margin-top: 6px;
-    }
-
-    .card-title {
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .field {
-      font-size: 14px;
-    }
-
-    .field span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 4px;
-    }
-
-    .card-actions {
-      margin-top: 12px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .checkbox-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .checkbox-wrap input {
-      width: auto;
-      margin: 0;
-    }
-
-    .money-hint {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    @media (max-width: 860px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .card-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
+    :root { --bg:#0f1115; --surface:#151821; --text:#f3f4f6; --muted:#9ca3af; --border:#2a2f3a; --hover:#1f2430; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:'Montserrat',sans-serif; background:var(--bg); color:var(--text); }
+    .page { max-width:1100px; margin:0 auto; padding:28px 24px 48px; }
+    .header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
+    .header h1 { margin:0; font-size:26px; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:10px; margin:14px 0 20px; align-items:center; }
+    .btn { border:1px solid var(--border); background:var(--surface); padding:8px 14px; border-radius:10px; font-weight:600; text-decoration:none; color:var(--text); display:inline-flex; align-items:center; gap:8px; cursor:pointer; transition:background .2s ease, transform .2s ease; }
+    .btn:hover { background:var(--hover); transform:translateY(-1px); }
+    .flash { margin:10px 0 14px; padding:10px 12px; border-radius:10px; background:#111827; border:1px solid var(--border); font-weight:600; }
+    .grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:16px; margin-bottom:16px; }
+    label { display:block; font-weight:600; margin-bottom:6px; }
+    input, select { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:14px; background:var(--surface); color:var(--text); }
+    .full { grid-column:1/-1; }
+    .error { color:#fca5a5; font-size:12px; margin-top:4px; }
+    .nav { display:flex; gap:10px; margin:18px 0 8px; flex-wrap:wrap; }
+    .card { border:1px solid var(--border); border-radius:12px; padding:16px; background:var(--surface); margin-top:6px; }
+    .card-title { font-weight:700; margin-bottom:10px; }
+    .card-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; }
+    .field { font-size:14px; }
+    .field span { display:block; color:var(--muted); font-size:12px; margin-bottom:4px; }
+    .card-actions { margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; }
+    .checkbox-wrap { display:flex; align-items:center; gap:8px; }
+    .checkbox-wrap input { width:auto; margin:0; }
+    .money-hint { color:var(--muted); font-size:12px; margin-top:4px; }
+    @media (max-width:860px){ .grid{grid-template-columns:1fr;} .card-grid{grid-template-columns:1fr;} .header{flex-direction:column; align-items:flex-start;} }
   </style>
 </head>
 <body>
@@ -245,26 +91,11 @@
     <div class="card" th:if="${produtosPage.content.size() > 0}" th:with="p=${produtosPage.content[0]}">
       <div class="card-title">Produto Navegado</div>
       <div class="card-grid">
-        <div class="field">
-          <span>Nome</span>
-          <strong th:text="${p.nome}"></strong>
-        </div>
-        <div class="field">
-          <span>Categoria</span>
-          <strong th:text="${p.categoria}"></strong>
-        </div>
-        <div class="field">
-          <span>Preço</span>
-          <strong class="money" th:attr="data-value=${p.preco}"></strong>
-        </div>
-        <div class="field">
-          <span>Estoque</span>
-          <strong th:text="${p.estoque}"></strong>
-        </div>
-        <div class="field">
-          <span>Status</span>
-          <strong th:text="${p.ativo ? 'Ativo' : 'Inativo'}"></strong>
-        </div>
+        <div class="field"><span>Nome</span><strong th:text="${p.nome}"></strong></div>
+        <div class="field"><span>Categoria</span><strong th:text="${p.categoria}"></strong></div>
+        <div class="field"><span>Preço</span><strong class="money" th:attr="data-value=${p.preco}"></strong></div>
+        <div class="field"><span>Estoque</span><strong th:text="${p.estoque}"></strong></div>
+        <div class="field"><span>Status</span><strong th:text="${p.ativo ? 'Ativo' : 'Inativo'}"></strong></div>
       </div>
       <div class="card-actions">
         <a class="btn" th:href="@{/produtos/editar/{id}(id=${p.id}, page=${produtosPage.number})}">✏️ Editar</a>
@@ -274,9 +105,7 @@
       </div>
     </div>
 
-    <div class="card" th:if="${produtosPage.content.size() == 0}">
-      Nenhum produto cadastrado.
-    </div>
+    <div class="card" th:if="${produtosPage.content.size() == 0}">Nenhum produto cadastrado.</div>
   </div>
 
   <script>
@@ -285,9 +114,7 @@
 
     function formatarMoeda(valor) {
       const numero = Number(valor);
-      if (Number.isNaN(numero)) {
-        return '';
-      }
+      if (Number.isNaN(numero)) { return ''; }
       return numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
@@ -307,9 +134,7 @@
 
     document.querySelectorAll('.money').forEach(el => {
       const value = el.dataset.value;
-      if (value) {
-        el.textContent = 'R$ ' + formatarMoeda(value);
-      }
+      if (value) { el.textContent = 'R$ ' + formatarMoeda(value); }
     });
   </script>
 </body>

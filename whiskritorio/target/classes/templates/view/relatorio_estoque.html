@@ -3,69 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/img/whisky.png" />
   <title>Relatório de Estoque</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
 
-    :root {
-      --bg: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --warn: #fef3c7;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Montserrat', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .page {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 28px 24px 48px;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
-
-    .btn {
-      border: 1px solid var(--border);
-      background: #fff;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-weight: 600;
-      text-decoration: none;
-      color: var(--text);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 8px;
-    }
-
-    th, td {
-      text-align: left;
-      padding: 10px 8px;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-    }
-
-    .low {
-      background: var(--warn);
-    }
+    :root { --bg:#0f1115; --surface:#151821; --text:#f3f4f6; --muted:#9ca3af; --border:#2a2f3a; --warn:#3b2f0f; }
+    body { margin:0; font-family:'Montserrat',sans-serif; background:var(--bg); color:var(--text); }
+    .page { max-width:1100px; margin:0 auto; padding:28px 24px 48px; }
+    .header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
+    .btn { border:1px solid var(--border); background:var(--surface); padding:8px 14px; border-radius:10px; font-weight:600; text-decoration:none; color:var(--text); display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+    table { width:100%; border-collapse:collapse; margin-top:8px; }
+    th, td { text-align:left; padding:10px 8px; border-bottom:1px solid var(--border); font-size:14px; }
+    .low { background:var(--warn); }
   </style>
 </head>
 <body>
@@ -93,9 +43,7 @@
           <td th:text="${p.estoque}"></td>
           <td th:text="${p.ativo ? 'Ativo' : 'Inativo'}"></td>
         </tr>
-        <tr th:if="${produtos.size() == 0}">
-          <td colspan="5">Nenhum produto cadastrado.</td>
-        </tr>
+        <tr th:if="${produtos.size() == 0}"><td colspan="5">Nenhum produto cadastrado.</td></tr>
       </tbody>
     </table>
   </div>
@@ -103,17 +51,13 @@
   <script>
     function formatarMoeda(valor) {
       const numero = Number(valor);
-      if (Number.isNaN(numero)) {
-        return '';
-      }
+      if (Number.isNaN(numero)) { return ''; }
       return 'R$ ' + numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     document.querySelectorAll('.money').forEach(el => {
       const value = el.dataset.value;
-      if (value) {
-        el.textContent = formatarMoeda(value);
-      }
+      if (value) { el.textContent = formatarMoeda(value); }
     });
   </script>
 </body>

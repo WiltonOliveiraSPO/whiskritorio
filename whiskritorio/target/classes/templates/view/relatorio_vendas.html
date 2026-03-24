@@ -3,127 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/img/whisky.png" />
   <title>Relatório de Vendas</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
 
-    :root {
-      --bg: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --hover: #f3f4f6;
-      --accent: #111827;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Montserrat', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .page {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 28px 24px 48px;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
-
-    .btn {
-      border: 1px solid var(--border);
-      background: #fff;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-weight: 600;
-      text-decoration: none;
-      color: var(--text);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    .tab {
-      border: 1px solid var(--border);
-      background: #fff;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .tab.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-
-    .panel {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      align-items: end;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 14px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 8px;
-    }
-
-    th, td {
-      text-align: left;
-      padding: 10px 8px;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-    }
-
-    .total {
-      font-weight: 700;
-      margin-top: 12px;
-    }
-
-    @media (max-width: 900px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
+    :root { --bg:#0f1115; --surface:#151821; --text:#f3f4f6; --muted:#9ca3af; --border:#2a2f3a; --hover:#1f2430; --accent:#f9fafb; }
+    body { margin:0; font-family:'Montserrat',sans-serif; background:var(--bg); color:var(--text); }
+    .page { max-width:1100px; margin:0 auto; padding:28px 24px 48px; }
+    .header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
+    .btn { border:1px solid var(--border); background:var(--surface); padding:8px 14px; border-radius:10px; font-weight:600; text-decoration:none; color:var(--text); display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+    .tabs { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+    .tab { border:1px solid var(--border); background:var(--surface); padding:8px 14px; border-radius:999px; font-weight:700; cursor:pointer; color:var(--text); }
+    .tab.active { background:var(--accent); color:#111827; border-color:var(--accent); }
+    .panel { border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:16px; background:var(--surface); }
+    .grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; align-items:end; }
+    label { display:block; font-weight:600; margin-bottom:6px; }
+    input, select { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:14px; background:var(--surface); color:var(--text); }
+    table { width:100%; border-collapse:collapse; margin-top:8px; }
+    th, td { text-align:left; padding:10px 8px; border-bottom:1px solid var(--border); font-size:14px; }
+    .total { font-weight:700; margin-top:12px; }
+    @media (max-width:900px){ .grid{grid-template-columns:1fr;} }
   </style>
 </head>
 <body>
@@ -195,9 +95,7 @@
           <td class="money" th:attr="data-value=${v.total}"></td>
           <td th:text="${#temporals.format(v.criadoEm, 'dd/MM/yyyy HH:mm')}"></td>
         </tr>
-        <tr th:if="${vendas.size() == 0}">
-          <td colspan="5">Nenhuma venda registrada.</td>
-        </tr>
+        <tr th:if="${vendas.size() == 0}"><td colspan="5">Nenhuma venda registrada.</td></tr>
       </tbody>
     </table>
 
@@ -210,33 +108,21 @@
     const panelPeriodo = document.getElementById('panel-periodo');
     const panelTipo = document.getElementById('panel-tipo');
 
-    tabs.forEach(tab => {
-      tab.classList.toggle('active', tab.dataset.tab === abaAtiva);
-    });
-
+    tabs.forEach(tab => { tab.classList.toggle('active', tab.dataset.tab === abaAtiva); });
     panelPeriodo.style.display = abaAtiva === 'periodo' ? 'block' : 'none';
     panelTipo.style.display = abaAtiva === 'tipo' ? 'block' : 'none';
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const alvo = tab.dataset.tab;
-        window.location.href = `/relatorios/vendas?aba=${alvo}`;
-      });
-    });
+    tabs.forEach(tab => { tab.addEventListener('click', () => { window.location.href = `/relatorios/vendas?aba=${tab.dataset.tab}`; }); });
 
     function formatarMoeda(valor) {
       const numero = Number(valor);
-      if (Number.isNaN(numero)) {
-        return '';
-      }
+      if (Number.isNaN(numero)) { return ''; }
       return 'R$ ' + numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     document.querySelectorAll('.money').forEach(el => {
       const value = el.dataset.value;
-      if (value) {
-        el.textContent = formatarMoeda(value);
-      }
+      if (value) { el.textContent = formatarMoeda(value); }
     });
   </script>
 </body>
